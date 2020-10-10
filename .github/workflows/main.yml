@@ -9,6 +9,18 @@ jobs:
       - uses: docker://lpenz/omnilint:latest
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [debian, raspbian]
+        dist: [buster]
+        arch: [amd64, i386, armhf, arm64]
+        exclude:
+          - os: raspbian
+            arch: i386
+          - os: raspbian
+            arch: amd64
+          - os: raspbian
+            arch: arm64
     steps:
       - id: tag
         name: tag-discovery
@@ -29,4 +41,8 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           push: ${{ github.event_name != 'pull_request' }}
-          tags: lpenz/ghaction-cmake:${{ steps.tag.outputs.tag }}
+          build-args: |
+            OS=${{ matrix.os }}
+            DIST=${{ matrix.dist }}
+            ARCH=${{ matrix.arch }}
+          tags: lpenz/ghaction-debuild:${{ matrix.os }}-${{ matrix.dist}}-${{ matrix.arch }}-${{ steps.tag.outputs.tag }}

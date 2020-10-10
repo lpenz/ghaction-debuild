@@ -4,7 +4,4 @@
 
 set -e -x
 
-mk-build-deps -i -r --tool=/usr/local/bin/mk-build-deps-tool ./debian/control
-gbp buildpackage --git-ignore-branch -us -uc
-
-mv ../*.deb .
+apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes "$@"
